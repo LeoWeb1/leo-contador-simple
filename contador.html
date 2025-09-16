@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de Monedas y Billetes Peruanos Leo Huauya</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #ec4899;
+            --color-primary-dark: #db2777;
+            --color-secondary: #4f46e5;
+            --color-dark: #1f2937;
+            --color-light: #f9fafb;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-dark) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .denomination-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            transition: var(--transition);
+        }
+        
+        .denomination-item:hover {
+            background-color: #f9fafb;
+        }
+        
+        .denomination-item:last-child {
+            border-bottom: none;
+        }
+        
+        .currency-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: white;
+        }
+        
+        .bill .currency-image {
+            background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);
+        }
+        
+        .input-container {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-field {
+            width: 100px;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .input-field:focus {
+            border-color: var(--color-primary);
+            outline: none;
+        }
+        
+        .total-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-dark);
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 12px;
+        }
+        
+        .btn-reset {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .btn-reset:hover {
+            transform: scale(1.05);
+        }
+        
+        .result-section {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .denomination-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .input-container {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+            }
+            
+            .input-field {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8">
+    <header class="header mb-8">
+        <div class="container">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-money-bill-wave text-3xl mr-3"></i>
+                    <h1 class="text-2xl font-bold">Contador de Monedas y Billetes Peruanos leo huauya</h1>
+                </div>
+                <div class="flex items-center">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNNyAyMWgxMGEyIDIgMCAwIDAgMi0yVjVhMiAyIDAgMCAwLTItMkg3YTIgMiAwIDAgMC0yIDJ2MTRhMiAyIDAgMCAwIDIgMnoiPjwvcGF0aD48cGF0aCBkPSJNMTcgMTVWOWwwLTMtNSA0LTUtNCI+PC9wYXRoPjwvc3ZnPg==" alt="Soles Peruanos" class="h-8">
+                    <span class="ml-2 font-semibold">S/.</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="card mb-6">
+                    <div class="bg-gray-800 text-white py-3 px-4">
+                        <h2 class="text-xl font-bold">Billetes Peruanos</h2>
+                    </div>
+                    <div class="p-4">
+                        <div class="denomination-item bill">
+                            <div class="currency-image">
+                                <span>200</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Billete de 200 Soles</h3>
+                                <p class="text-gray-600">S/. 200.00</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="200" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <div class="denomination-item bill">
+                            <div class="currency-image">
+                                <span>100</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Billete de 100 Soles</h3>
+                                <p class="text-gray-600">S/. 100.00</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="100" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <div class="denomination-item bill">
+                            <div class="currency-image">
+                                <span>50</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Billete de 50 Soles</h3>
+                                <p class="text-gray-600">S/. 50.00</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="50" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Billete de 20 -->
+                        <div class="denomination-item bill">
+                            <div class="currency-image">
+                                <span>20</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Billete de 20 Soles</h3>
+                                <p class="text-gray-600">S/. 20.00</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="20" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <div class="denomination-item bill">
+                            <div class="currency-image">
+                                <span>10</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Billete de 10 Soles</h3>
+                                <p class="text-gray-600">S/. 10.00</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="10" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="bg-gray-800 text-white py-3 px-4">
+                        <h2 class="text-xl font-bold">Monedas Peruanas</h2>
+                    </div>
+                    <div class="p-4">
+                        <div class="denomination-item">
+                            <div class="currency-image">
+                                <span>5</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Moneda de 5 Soles</h3>
+                                <p class="text-gray-600">S/. 5.00</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="5" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Moneda de 2 -->
+                        <div class="denomination-item">
+                            <div class="currency-image">
+                                <span>2</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Moneda de 2 Soles</h3>
+                                <p class="text-gray-600">S/. 2.00</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="2" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Moneda de 1 -->
+                        <div class="denomination-item">
+                            <div class="currency-image">
+                                <span>1</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Moneda de 1 Sol</h3>
+                                <p class="text-gray-600">S/. 1.00</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="1" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Moneda de 0.50 -->
+                        <div class="denomination-item">
+                            <div class="currency-image">
+                                <span>0.5</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Moneda de 50 Céntimos</h3>
+                                <p class="text-gray-600">S/. 0.50</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="0.5" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Moneda de 0.20 -->
+                        <div class="denomination-item">
+                            <div class="currency-image">
+                                <span>0.2</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Moneda de 20 Céntimos</h3>
+                                <p class="text-gray-600">S/. 0.20</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="0.2" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Moneda de 0.10 -->
+                        <div class="denomination-item">
+                            <div class="currency-image">
+                                <span>0.1</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">Moneda de 10 Céntimos</h3>
+                                <p class="text-gray-600">S/. 0.10</p>
+                            </div>
+                            <div class="input-container">
+                                <input type="number" min="0" class="input-field denomination-input" data-value="0.1" placeholder="0">
+                                <span class="ml-2 font-semibold">x</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="card sticky top-4">
+                    <div class="bg-gray-800 text-white py-3 px-4">
+                        <h2 class="text-xl font-bold">Total Calculado</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="total-display mb-6">
+                            S/. <span id="total-amount">0.00</span>
+                        </div>
+                        
+                        <div class="result-section mb-6">
+                            <h3 class="font-semibold text-lg mb-3">Desglose por denominación:</h3>
+                            <div id="breakdown-results">
+                                <!-- Los resultados se mostrarán aquí -->
+                                <p class="text-center text-gray-600">Ingresa cantidades para ver el desglose</p>
+                            </div>
+                        </div>
+                        
+                        <button id="reset-btn" class="btn-reset w-full py-3">
+                            <i class="fas fa-redo-alt mr-2"></i> Reiniciar Contador
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-12 text-center text-gray-600">
+        <p>© 2023 Contador de Monedas y Billetes Peruanos - Herramienta útil para contar dinero</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const denominationInputs = document.querySelectorAll('.denomination-input');
+            const totalAmountElement = document.getElementById('total-amount');
+            const breakdownResultsElement = document.getElementById('breakdown-results');
+            const resetButton = document.getElementById('reset-btn');
+            
+            let totalAmount = 0;
+            
+            function calculateTotal() {
+                totalAmount = 0;
+                let breakdownHTML = '';
+                
+                denominationInputs.forEach(input => {
+                    const value = parseFloat(input.getAttribute('data-value'));
+                    const quantity = parseInt(input.value) || 0;
+                    const subtotal = value * quantity;
+                    
+                    if (quantity > 0) {
+                        totalAmount += subtotal;
+                        
+                        breakdownHTML += `
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span>${quantity} x S/. ${value.toFixed(2)}</span>
+                                <span class="font-semibold">S/. ${subtotal.toFixed(2)}</span>
+                            </div>
+                        `;
+                    }
+                });
+                
+                totalAmountElement.textContent = totalAmount.toFixed(2);
+                
+                if (breakdownHTML) {
+                    breakdownResultsElement.innerHTML = breakdownHTML;
+                } else {
+                    breakdownResultsElement.innerHTML = '<p class="text-center text-gray-600">Ingresa cantidades para ver el desglose</p>';
+                }
+            }
+            
+            denominationInputs.forEach(input => {
+                input.addEventListener('input', calculateTotal);
+            });
+            
+            function resetCounter() {
+                denominationInputs.forEach(input => {
+                    input.value = '';
+                });
+                calculateTotal();
+            }
+            
+            resetButton.addEventListener('click', resetCounter);
+            
+            calculateTotal();
+        });
+    </script>
+</body>
+</html>
